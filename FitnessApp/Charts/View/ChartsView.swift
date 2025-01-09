@@ -8,14 +8,6 @@
 import SwiftUI
 import Charts
 
-enum ChartOptions: String, CaseIterable {
-    case oneWeek = "1W"
-    case oneMonth = "1M"
-    case threeMonths = "3M"
-    case yearToDate = "YTD"
-    case oneYear = "1Y"
-}
-
 struct ChartsView: View {
     @StateObject var viewModel = ChartsViewModel()
     @State var selectedChart: ChartOptions = .oneWeek
@@ -31,36 +23,56 @@ struct ChartsView: View {
             ZStack {
                 switch selectedChart {
                 case .oneWeek:
-                    Chart {
-                        ForEach(viewModel.mockChartData) { data in
-                            BarMark(x: .value(data.date.formatted(), data.date, unit: .day), y: .value("Steps", data.count))
+                    VStack {
+                        ChartDataView(average: viewModel.oneWeekAverage, total: viewModel.oneWeekTotal)
+                        Chart {
+                            ForEach(viewModel.mockWeekChartData) { data in
+                                BarMark(x: .value(data.date.formatted(), data.date, unit: .day), y: .value("Steps", data.count))
+                            }
                         }
                     }
                 case .oneMonth:
-                    Chart {
-                        ForEach(viewModel.mockOnemonthData) { data in
-                            BarMark(x: .value(data.date.formatted(), data.date, unit: .day), y: .value("Steps", data.count))
+                    VStack {
+                        ChartDataView(average: viewModel.oneMonthAverage, total: viewModel.oneMonthTotal)
+                        Chart {
+                            ForEach(viewModel.mockOnemonthData) { data in
+                                BarMark(x: .value(data.date.formatted(), data.date, unit: .day), y: .value("Steps", data.count))
+                            }
                         }
                     }
                 case .threeMonths:
-                    Chart {
-                        ForEach(viewModel.mockThreemonthData) { data in
-                            BarMark(x: .value(data.date.formatted(), data.date, unit: .day), y: .value("Steps", data.count))
+                    VStack {
+                        ChartDataView(average: viewModel.threeMonthAverage, total: viewModel.threeMonthTotal)
+                        Chart {
+                            ForEach(viewModel.mockThreemonthData) { data in
+                                BarMark(x: .value(data.date.formatted(), data.date, unit: .day), y: .value("Steps", data.count))
+                            }
                         }
                     }
                 case .yearToDate:
-                    EmptyView()
+                    VStack {
+                        ChartDataView(average: viewModel.ytdAverage, total: viewModel.ytdTotal)
+                        Chart {
+                            ForEach(viewModel.mockYTDChartData) { data in
+                                BarMark(x: .value(data.date.formatted(), data.date, unit: .month), y: .value("Steps", data.count))
+                            }
+                        }
+                    }
+
                 case .oneYear:
-                    Chart {
-                        ForEach(viewModel.mockChartData) { data in
-                            BarMark(x: .value(data.date.formatted(), data.date, unit: .day), y: .value("Steps", data.count))
+                    VStack {
+                        ChartDataView(average: viewModel.oneYearAverage, total: viewModel.oneYearTotal)
+                        Chart {
+                            ForEach(viewModel.mockYTDChartData) { data in
+                                BarMark(x: .value(data.date.formatted(), data.date, unit: .month), y: .value("Steps", data.count))
+                            }
                         }
                     }
                 }
                 
             }
             .foregroundColor(.green)
-            .frame(maxHeight: 350)
+            .frame(maxHeight: 450)
             .padding(.horizontal)
             
             HStack {
