@@ -26,7 +26,7 @@ struct ChartDataView: View {
             .frame(width: 90)
             .foregroundColor(.black)
             .padding()
-            .background(.gray.opacity(0.1))
+            .background(.gray.opacity(0.4))
             .cornerRadius(10)
             
             Spacer()
@@ -41,7 +41,7 @@ struct ChartDataView: View {
             .frame(width: 90)
             .foregroundColor(.black)
             .padding()
-            .background(.gray.opacity(0.1))
+            .background(.gray.opacity(0.4))
             .cornerRadius(10)
             
             

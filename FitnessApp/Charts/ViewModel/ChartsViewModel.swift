@@ -9,23 +9,26 @@ import Foundation
 
 class ChartsViewModel: ObservableObject {
     
-    @Published var mockOnemonthData = [DailyStepModel]()
-    @Published var mockThreemonthData = [DailyStepModel]()
+    let healthmanager = HealthManager.shared
     
     @Published var oneWeekAverage = 1235
     @Published var oneWeekTotal = 8655
     
+    @Published var mockOnemonthData = [DailyStepModel]()
     @Published var oneMonthAverage = 0
     @Published var oneMonthTotal = 0
     
+    @Published var mockThreemonthData = [DailyStepModel]()
     @Published var threeMonthAverage = 0
     @Published var threeMonthTotal = 0
     
-    @Published var ytdAverage = 56854
-    @Published var ytdTotal = 156854
+    @Published var ytdChartData = [MonthlyStepModel]()
+    @Published var ytdAverage = 0
+    @Published var ytdTotal = 0
     
-    @Published var oneYearAverage = 121550
-    @Published var oneYearTotal = 1568544
+    @Published var oneYearChartData = [MonthlyStepModel]()
+    @Published var oneYearAverage = 0
+    @Published var oneYearTotal = 0
     
     var mockWeekChartData = [
         DailyStepModel(date: Date(), count: 15000),
@@ -48,12 +51,14 @@ class ChartsViewModel: ObservableObject {
     ]
     
     init() {
-        var mockOneMonth = mockDataForDays(days: 30)
-        var mockThreeMonth = mockDataForDays(days: 90)
+        let mockOneMonth = mockDataForDays(days: 30)
+        let mockThreeMonth = mockDataForDays(days: 90)
         DispatchQueue.main.async {
             self.mockOnemonthData = mockOneMonth
             self.mockThreemonthData = mockThreeMonth
         }
+        
+        fetchYTDAndOneYearChartData()
     }
     
     
@@ -66,5 +71,25 @@ class ChartsViewModel: ObservableObject {
             mockData.append(dailyStepData)
         }
         return mockData
+    }
+    
+    func fetchYTDAndOneYearChartData() {
+        healthmanager.fetchYTDAndOneYearChartData { result in
+            switch result {
+            case .success(let result):
+                DispatchQueue.main.async {
+                    self.ytdChartData = result.ytd
+                    self.oneYearChartData = result.oneYear
+                    
+                    self.ytdTotal = self.ytdChartData.reduce(0, { $0 + $1.count })
+                    self.oneYearTotal = self.oneYearChartData.reduce(0, { $0 + $1.count })
+                    
+                    self.ytdAverage = self.ytdTotal / Calendar.current.component(.month, from: Date())
+                    self.oneYearAverage = self.oneYearTotal / 12
+                }
+            case .failure(let failure):
+                print(failure.localizedDescription)
+            }
+        }
     }
 }
